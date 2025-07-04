@@ -2,7 +2,6 @@ import React from 'react';
 import { Routes, Route, useLocation } from "react-router-dom";
 import FormLogin from './components/formLogin/FormLogin';
 import RegisterLogin from './components/registerLogin/RegisterLogin';
-import FormProducto from './components/formProducto/FormProducto';
 import LandingPage from './views/landinHome';
 import ClienteMenu from './components/clientMenu/ClientMenu';
 import PanelAdmin from './components/panelAdmin/PanelAdmin';
@@ -23,7 +22,6 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<FormLogin />} />
           <Route path="/register" element={<RegisterLogin />} />
-          <Route path="/productos" element={<FormProducto />} />
           <Route path="/clienteMenu" element={<ClienteMenu />} />
           <Route path="/panelAdmin" element={<PanelAdmin />} />
           <Route path="/ordenDeCompra" element={<OrdenDeCompra />} />

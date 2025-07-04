@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { API_BASE_URL } from '../../api/api'
+import { API_BASE_URL } from '../../api/api';
 import styles from './RegisterLogin.module.css';
 
 const RegisterLogin = ({ onSwitchToLogin }) => {
@@ -30,7 +30,6 @@ const RegisterLogin = ({ onSwitchToLogin }) => {
   const handleRegister = async () => {
     setError(null);
 
-    // Validación básica
     const campos = ['nombre', 'apellido', 'dni', 'email', 'password', 'rol'];
     for (let campo of campos) {
       if (!form[campo]) {
@@ -62,6 +61,10 @@ const RegisterLogin = ({ onSwitchToLogin }) => {
       if (response.ok && data.success) {
         alert('Usuario registrado correctamente');
 
+        // GUARDAR ID EN LOCALSTORAGE
+        localStorage.setItem('usuario_id', data.id);
+        console.log('Usuario ID:', data.id); // DEBUG
+
         setTimeout(() => {
           if (form.rol === 'cliente') {
             navigate('/clienteMenu');
@@ -85,78 +88,25 @@ const RegisterLogin = ({ onSwitchToLogin }) => {
       <div className={styles.formBox}>
         <h2>Registro de Usuario</h2>
 
-        <input
-          type="text"
-          name="nombre"
-          placeholder="Nombre"
-          className={styles.input}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="apellido"
-          placeholder="Apellido"
-          className={styles.input}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="dni"
-          placeholder="DNI"
-          className={styles.input}
-          onChange={handleChange}
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          className={styles.input}
-          onChange={handleChange}
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Contraseña"
-          className={styles.input}
-          onChange={handleChange}
-        />
-        <select
-          name="rol"
-          className={styles.input}
-          defaultValue=""
-          onChange={handleChange}
-        >
-          <option value="" disabled>
-            Selecciona un rol
-          </option>
+        <input type="text" name="nombre" placeholder="Nombre" onChange={handleChange} className={styles.input} />
+        <input type="text" name="apellido" placeholder="Apellido" onChange={handleChange} className={styles.input} />
+        <input type="text" name="dni" placeholder="DNI" onChange={handleChange} className={styles.input} />
+        <input type="email" name="email" placeholder="Email" onChange={handleChange} className={styles.input} />
+        <input type="password" name="password" placeholder="Contraseña" onChange={handleChange} className={styles.input} />
+        <select name="rol" className={styles.input} defaultValue="" onChange={handleChange}>
+          <option value="" disabled>Selecciona un rol</option>
           <option value="cliente">Cliente</option>
           <option value="admin">Admin</option>
         </select>
-        <input
-          type="file"
-          name="foto"
-          accept="image/*"
-          className={styles.input}
-          onChange={handleChange}
-        />
+        <input type="file" name="foto" accept="image/*" onChange={handleChange} className={styles.input} />
 
         {error && <p style={{ color: 'red' }}>{error}</p>}
 
-        <button
-          type="button"
-          className={styles.loginBtn}
-          onClick={handleRegister}
-          disabled={isSubmitting}
-        >
+        <button className={styles.loginBtn} onClick={handleRegister} disabled={isSubmitting}>
           {isSubmitting ? 'Registrando...' : 'Registrarme'}
         </button>
 
-        <button
-          type="button"
-          className={styles.switchBtn}
-          onClick={onSwitchToLogin}
-          disabled={isSubmitting}
-        >
+        <button className={styles.switchBtn} onClick={onSwitchToLogin} disabled={isSubmitting}>
           Ya tengo cuenta
         </button>
       </div>
@@ -165,12 +115,6 @@ const RegisterLogin = ({ onSwitchToLogin }) => {
 };
 
 export default RegisterLogin;
-//funciona ✔
-
-
-
-
-
 
 
 
@@ -182,8 +126,8 @@ export default RegisterLogin;
 
 // import { useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
+// import { API_BASE_URL } from '../../api/api'
 // import styles from './RegisterLogin.module.css';
-// //import { API_BASE_URL } from '../../api/api';
 
 // const RegisterLogin = ({ onSwitchToLogin }) => {
 //   const [form, setForm] = useState({
@@ -195,95 +139,150 @@ export default RegisterLogin;
 //     rol: '',
 //     foto: null,
 //   });
+
 //   const [error, setError] = useState(null);
-//   const [isSubmitting, setIsSubmitting] = useState(false); // <-- nuevo estado
+//   const [isSubmitting, setIsSubmitting] = useState(false);
 //   const navigate = useNavigate();
 
 //   const handleChange = (e) => {
-//     if (e.target.name === 'foto') {
-//       setForm({ ...form, foto: e.target.files[0] });
+//     const { name, value, files } = e.target;
+//     if (name === 'foto') {
+//       setForm((prev) => ({ ...prev, foto: files[0] }));
 //     } else {
-//       setForm({ ...form, [e.target.name]: e.target.value });
+//       setForm((prev) => ({ ...prev, [name]: value }));
 //     }
 //   };
 
 //   const handleRegister = async () => {
-//     if (isSubmitting) return; // evita envíos mientras está enviando
 //     setError(null);
 
-//     const camposRequeridos = ['nombre', 'apellido', 'dni', 'email', 'password', 'rol'];
-//     for (let campo of camposRequeridos) {
+//     // Validación básica
+//     const campos = ['nombre', 'apellido', 'dni', 'email', 'password', 'rol'];
+//     for (let campo of campos) {
 //       if (!form[campo]) {
 //         setError('Todos los campos son obligatorios.');
 //         return;
 //       }
 //     }
 
-//     setIsSubmitting(true); // comienza el proceso
+//     setIsSubmitting(true);
 
 //     try {
 //       const formData = new FormData();
 //       for (const key in form) {
-//         if (key === 'foto') {
-//           if (form[key]) {
-//             formData.append(key, form[key]);
-//           }
-//         } else {
-//           formData.append(key, form[key] || '');
+//         if (form[key]) {
+//           formData.append(key, form[key]);
 //         }
 //       }
 
-//       const res = await fetch(`${API_BASE_URL}?controller=usuarios&action=register`, {
-//         method: 'POST',
-//         body: formData,
-//       });
+//       const response = await fetch(
+//         `${API_BASE_URL}?controller=usuarios&action=register`,
+//         {
+//           method: 'POST',
+//           body: formData,
+//         }
+//       );
 
-//       const data = await res.json();
+//       const data = await response.json();
 
-//       if (res.ok && data.success) {
+//       if (response.ok && data.success) {
 //         alert('Usuario registrado correctamente');
+
 //         setTimeout(() => {
 //           if (form.rol === 'cliente') {
-//             navigate('/cliente');
+//             navigate('/clienteMenu');
 //           } else if (form.rol === 'admin') {
-//             navigate('/admin');
+//             navigate('/panelAdmin');
 //           }
-//         }, 3000);
+//         }, 1500);
 //       } else {
-//         setError(data.message || 'Error al registrarse');
+//         setError(data.error || 'Error en el registro');
 //       }
 //     } catch (err) {
-//       setError('Error al conectar con el servidor');
+//       console.error(err);
+//       setError('No se pudo conectar con el servidor.');
 //     } finally {
-//       setIsSubmitting(false); // termina el proceso
+//       setIsSubmitting(false);
 //     }
 //   };
 
 //   return (
 //     <div className={styles.container}>
 //       <div className={styles.formBox}>
-//         <h2>Registrate</h2>
-//         <input name="nombre" placeholder="Nombre" className={styles.input} onChange={handleChange} />
-//         <input name="apellido" placeholder="Apellido" className={styles.input} onChange={handleChange} />
-//         <input name="dni" placeholder="DNI" className={styles.input} onChange={handleChange} />
-//         <input name="email" placeholder="Email" type="email" className={styles.input} onChange={handleChange} />
-//         <input name="password" placeholder="Contraseña" type="password" className={styles.input} onChange={handleChange} />
-//         <select name="rol" className={styles.input} defaultValue="" onChange={handleChange}>
-//           <option value="" disabled>Seleccioná un rol</option>
+//         <h2>Registro de Usuario</h2>
+
+//         <input
+//           type="text"
+//           name="nombre"
+//           placeholder="Nombre"
+//           className={styles.input}
+//           onChange={handleChange}
+//         />
+//         <input
+//           type="text"
+//           name="apellido"
+//           placeholder="Apellido"
+//           className={styles.input}
+//           onChange={handleChange}
+//         />
+//         <input
+//           type="text"
+//           name="dni"
+//           placeholder="DNI"
+//           className={styles.input}
+//           onChange={handleChange}
+//         />
+//         <input
+//           type="email"
+//           name="email"
+//           placeholder="Email"
+//           className={styles.input}
+//           onChange={handleChange}
+//         />
+//         <input
+//           type="password"
+//           name="password"
+//           placeholder="Contraseña"
+//           className={styles.input}
+//           onChange={handleChange}
+//         />
+//         <select
+//           name="rol"
+//           className={styles.input}
+//           defaultValue=""
+//           onChange={handleChange}
+//         >
+//           <option value="" disabled>
+//             Selecciona un rol
+//           </option>
 //           <option value="cliente">Cliente</option>
 //           <option value="admin">Admin</option>
 //         </select>
-//         <input name="foto" type="file" accept="image/*" className={styles.input} onChange={handleChange} />
+//         <input
+//           type="file"
+//           name="foto"
+//           accept="image/*"
+//           className={styles.input}
+//           onChange={handleChange}
+//         />
+
 //         {error && <p style={{ color: 'red' }}>{error}</p>}
+
 //         <button
 //           type="button"
 //           className={styles.loginBtn}
 //           onClick={handleRegister}
-//           disabled={isSubmitting}  // <--- deshabilita botón mientras envía
+//           disabled={isSubmitting}
 //         >
 //           {isSubmitting ? 'Registrando...' : 'Registrarme'}
 //         </button>
-//         <button type="button" className={styles.switchBtn} onClick={onSwitchToLogin} disabled={isSubmitting}>
+
+//         <button
+//           type="button"
+//           className={styles.switchBtn}
+//           onClick={onSwitchToLogin}
+//           disabled={isSubmitting}
+//         >
 //           Ya tengo cuenta
 //         </button>
 //       </div>
@@ -292,3 +291,17 @@ export default RegisterLogin;
 // };
 
 // export default RegisterLogin;
+// //funciona ✔
+
+
+
+
+
+
+
+
+
+
+
+
+
